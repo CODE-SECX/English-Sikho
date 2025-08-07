@@ -66,42 +66,43 @@ export function AdminPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
         <div className="flex items-center justify-center mb-4">
           <Settings className="h-8 w-8 text-slate-600 mr-3" />
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Admin Dashboard</h1>
         </div>
-        <p className="text-slate-600">Manage your learning data and system settings</p>
+        <p className="text-sm sm:text-base text-slate-600 px-4">Manage your learning data and system settings</p>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/60">
+          <div key={index} className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
             <div className="text-center">
-              <div className={`inline-flex px-4 py-2 rounded-xl text-sm font-medium ${stat.color} mb-2`}>
+              <div className={`inline-flex px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium ${stat.color} mb-2`}>
                 {stat.label}
               </div>
-              <div className="text-3xl font-bold text-slate-900">{stat.value}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-slate-900">{stat.value}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Category Management */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/60">
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 flex items-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center">
             <Tag className="h-6 w-6 mr-2 text-slate-600" />
             Category Management
           </h2>
           <button
             onClick={() => setShowCategoryForm(true)}
-            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+            className="bg-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center text-sm sm:text-base"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Category
+            <span className="hidden sm:inline">Add Category</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
 
@@ -109,7 +110,7 @@ export function AdminPage() {
           {categories.map((category) => (
             <div
               key={category.id}
-              className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all duration-200"
+              className="bg-white/60 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all duration-200"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -118,9 +119,9 @@ export function AdminPage() {
                     style={{ backgroundColor: category.color }}
                   />
                   <div>
-                    <h3 className="font-semibold text-slate-900">{category.name}</h3>
+                    <h3 className="font-semibold text-slate-900 text-sm sm:text-base">{category.name}</h3>
                     {category.description && (
-                      <p className="text-sm text-slate-600">{category.description}</p>
+                      <p className="text-xs sm:text-sm text-slate-600">{category.description}</p>
                     )}
                   </div>
                 </div>
@@ -155,8 +156,8 @@ export function AdminPage() {
       {/* Category Form Modal */}
       {showCategoryForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingCategory ? 'Edit Category' : 'Add New Category'}
             </h2>
             
@@ -168,7 +169,7 @@ export function AdminPage() {
                   required
                   value={categoryForm.name}
                   onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Category name"
                 />
               </div>
@@ -178,7 +179,7 @@ export function AdminPage() {
                 <textarea
                   value={categoryForm.description}
                   onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent h-20 resize-none"
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent h-16 sm:h-20 resize-none text-sm sm:text-base"
                   placeholder="Optional description"
                 />
               </div>
@@ -205,17 +206,17 @@ export function AdminPage() {
                 </div>
               </div>
               
-              <div className="flex space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-purple-600 text-white py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                  className="flex-1 bg-purple-600 text-white py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm sm:text-base"
                 >
                   {editingCategory ? 'Update' : 'Create'} Category
                 </button>
                 <button
                   type="button"
                   onClick={resetCategoryForm}
-                  className="flex-1 bg-slate-200 text-slate-800 py-2.5 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                  className="flex-1 bg-slate-200 text-slate-800 py-2.5 rounded-lg hover:bg-slate-300 transition-colors font-medium text-sm sm:text-base"
                 >
                   Cancel
                 </button>

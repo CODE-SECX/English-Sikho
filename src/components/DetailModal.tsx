@@ -21,7 +21,7 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-slate-200 p-4 sm:p-6 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${isVocabulary ? 'bg-blue-100' : 'bg-emerald-100'}`}>
@@ -32,10 +32,10 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
                 )}
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-lg sm:text-2xl font-bold text-slate-900">
                   {isVocabulary ? vocabularyData.word : sikhoData.title}
                 </h2>
-                <div className="flex items-center text-sm text-slate-500 mt-1">
+                <div className="flex items-center text-xs sm:text-sm text-slate-500 mt-1">
                   <Calendar className="h-4 w-4 mr-1" />
                   {format(new Date(data.date), 'MMMM dd, yyyy')}
                 </div>
@@ -66,28 +66,28 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
           </div>
         </div>
         
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {isVocabulary ? (
             <>
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Meaning</h3>
-                <p className="text-slate-700 leading-relaxed">{vocabularyData.meaning}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Meaning</h3>
+                <p className="text-sm sm:text-base text-slate-700 leading-relaxed">{vocabularyData.meaning}</p>
               </div>
               
               {vocabularyData.context && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Context</h3>
-                  <div className="bg-slate-50 border-l-4 border-blue-200 p-4 rounded-r-lg">
-                    <p className="text-slate-700 italic">"{vocabularyData.context}"</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Context</h3>
+                  <div className="bg-slate-50 border-l-4 border-blue-200 p-3 sm:p-4 rounded-r-lg">
+                    <p className="text-sm sm:text-base text-slate-700 italic">"{vocabularyData.context}"</p>
                   </div>
                 </div>
               )}
               
               {vocabularyData.moment_of_memory && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Moment of Memory</h3>
-                  <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                    <p className="text-blue-800">{vocabularyData.moment_of_memory}</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Moment of Memory</h3>
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 sm:p-4 rounded-r-lg">
+                    <p className="text-sm sm:text-base text-blue-800">{vocabularyData.moment_of_memory}</p>
                   </div>
                 </div>
               )}
@@ -96,9 +96,9 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
             <>
               {sikhoData.category && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Category</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Category</h3>
                   <span
-                    className="inline-flex items-center px-3 py-1 rounded-full text-white font-medium"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-white font-medium text-sm"
                     style={{ backgroundColor: sikhoData.category.color }}
                   >
                     <Tag className="h-4 w-4 mr-2" />
@@ -108,19 +108,19 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
               )}
               
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Description</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Description</h3>
                 <div 
-                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
+                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-sm sm:text-base"
                   dangerouslySetInnerHTML={{ __html: sikhoData.description }}
                 />
               </div>
               
               {sikhoData.moment_of_memory && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Moment of Memory</h3>
-                  <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded-r-lg">
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Moment of Memory</h3>
+                  <div className="bg-emerald-50 border-l-4 border-emerald-400 p-3 sm:p-4 rounded-r-lg">
                     <div 
-                      className="prose prose-emerald max-w-none text-emerald-800"
+                      className="prose prose-emerald max-w-none text-emerald-800 text-sm sm:text-base"
                       dangerouslySetInnerHTML={{ __html: sikhoData.moment_of_memory }}
                     />
                   </div>
