@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Edit2, Trash2, Eye, BookOpen } from 'lucide-react';
+import { Calendar, Edit2, Trash2, Eye, BookOpen, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Vocabulary } from '../types';
 
@@ -8,12 +8,19 @@ interface VocabularyCardProps {
   onEdit: (vocabulary: Vocabulary) => void;
   onDelete: (id: string) => void;
   onView: (vocabulary: Vocabulary) => void;
+  onShare?: (vocabulary: Vocabulary) => void;
 }
 
-export function VocabularyCard({ vocabulary, onEdit, onDelete, onView }: VocabularyCardProps) {
+export function VocabularyCard({ vocabulary, onEdit, onDelete, onView, onShare }: VocabularyCardProps) {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  };
+
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   };
 
   return (
@@ -33,6 +40,15 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView }: Vocabul
         </div>
         
         <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onShare && (
+            <button
+              onClick={() => onShare(vocabulary)}
+              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+              title="Share"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+          )}
           <button
             onClick={() => onView(vocabulary)}
             className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -58,13 +74,13 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView }: Vocabul
       </div>
       
       <p className="text-sm sm:text-base text-slate-700 font-medium mb-3">
-        {truncateText(vocabulary.meaning, 100)}
+        {truncateText(stripHtml(vocabulary.meaning), 100)}
       </p>
       
       {vocabulary.context && (
         <div className="mb-3">
           <p className="text-xs sm:text-sm text-slate-600 italic">
-            "{truncateText(vocabulary.context, 80)}"
+            "{truncateText(stripHtml(vocabulary.context), 80)}"
           </p>
         </div>
       )}
@@ -72,7 +88,7 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView }: Vocabul
       {vocabulary.moment_of_memory && (
         <div className="bg-blue-50 border-l-4 border-blue-200 p-2 rounded-r-lg">
           <p className="text-xs sm:text-sm text-blue-700">
-            {truncateText(vocabulary.moment_of_memory, 60)}
+            {truncateText(stripHtml(vocabulary.moment_of_memory), 60)}
           </p>
         </div>
       )}

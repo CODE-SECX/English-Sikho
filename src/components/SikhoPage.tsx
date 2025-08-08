@@ -6,6 +6,7 @@ import type { Sikho } from '../types';
 import { SikhoCard } from './SikhoCard';
 import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
+import { SmartDropdown } from './SmartDropdown';
 
 export function SikhoPage() {
   const { sikho, loading, addSikho, updateSikho, deleteSikho } = useSikho();
@@ -316,11 +317,11 @@ export function SikhoPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Moment of Memory</label>
-                <RichTextEditor
+                <SmartDropdown
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
+                  options={[...new Set(sikho.map(s => s.moment_of_memory).filter(Boolean))]}
                   placeholder="How you learned or remembered this"
-                  height="120px"
                 />
               </div>
               

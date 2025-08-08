@@ -71,14 +71,20 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
             <>
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Meaning</h3>
-                <p className="text-sm sm:text-base text-slate-700 leading-relaxed">{vocabularyData.meaning}</p>
+                <div 
+                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-sm sm:text-base"
+                  dangerouslySetInnerHTML={{ __html: vocabularyData.meaning }}
+                />
               </div>
               
               {vocabularyData.context && (
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Context</h3>
                   <div className="bg-slate-50 border-l-4 border-blue-200 p-3 sm:p-4 rounded-r-lg">
-                    <p className="text-sm sm:text-base text-slate-700 italic">"{vocabularyData.context}"</p>
+                    <div 
+                      className="prose prose-slate max-w-none text-slate-700 italic text-sm sm:text-base"
+                      dangerouslySetInnerHTML={{ __html: `"${vocabularyData.context}"` }}
+                    />
                   </div>
                 </div>
               )}
@@ -87,7 +93,10 @@ export function DetailModal({ isOpen, onClose, data, type, onEdit }: DetailModal
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Moment of Memory</h3>
                   <div className="bg-blue-50 border-l-4 border-blue-400 p-3 sm:p-4 rounded-r-lg">
-                    <p className="text-sm sm:text-base text-blue-800">{vocabularyData.moment_of_memory}</p>
+                    <div 
+                      className="prose prose-blue max-w-none text-blue-800 text-sm sm:text-base"
+                      dangerouslySetInnerHTML={{ __html: vocabularyData.moment_of_memory }}
+                    />
                   </div>
                 </div>
               )}

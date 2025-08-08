@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X } from 'lucide-react';
+import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Share2, ChevronDown } from 'lucide-react';
 import { useVocabulary } from '../hooks/useSupabase';
 import { format } from 'date-fns';
 import type { Vocabulary } from '../types';
 import { VocabularyCard } from './VocabularyCard';
 import { DetailModal } from './DetailModal';
-import { RichTextEditor } from './RichTextEditor';
+import { SmartDropdown } from './SmartDropdown';
+import { ShareModal } from './ShareModal';
 
 export function VocabularyPage() {
   const { vocabulary, loading, addVocabulary, updateVocabulary, deleteVocabulary } = useVocabulary();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Vocabulary | null>(null);
   const [viewingItem, setViewingItem] = useState<Vocabulary | null>(null);
+  const [sharingItem, setSharingItem] = useState<Vocabulary | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'word' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [dateFilter, setDateFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'alphabet'>('grid');
   const [formData, setFormData] = useState({
     word: '',
     meaning: '',
@@ -24,6 +27,9 @@ export function VocabularyPage() {
     moment_of_memory: '',
     date: format(new Date(), 'yyyy-MM-dd')
   });
+
+  // Get unique moment of memory values for dropdown
+  const existingMoments = [...new Set(vocabulary.map(v => v.moment_of_memory).filter(Boolean))];
 
   const filteredVocabulary = vocabulary
     .filter(item => {
@@ -54,6 +60,26 @@ export function VocabularyPage() {
       const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return sortOrder === 'asc' ? comparison : -comparison;
     });
+
+  // Group vocabulary alphabetically for alphabet view
+  const alphabeticalGroups = filteredVocabulary.reduce((groups, item) => {
+    const firstLetter = item.word.charAt(0).toUpperCase();
+    if (!groups[firstLetter]) {
+      groups[firstLetter] = [];
+    }
+    groups[firstLetter].push(item);
+    return groups;
+  }, {} as Record<string, Vocabulary[]>);
+
+  const handleShare = (item: Vocabulary) => {
+    setSharingItem(item);
+  };
+
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +160,25 @@ export function VocabularyPage() {
         </button>
       </div>
 
+      {/* View Mode Toggle */}
+      <div className="flex justify-center mb-4">
+        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-1 shadow-lg border border-slate-200/60">
+          {(['grid', 'list', 'alphabet'] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setViewMode(mode)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors capitalize ${
+                viewMode === mode
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center space-x-2 flex-1">
@@ -208,26 +253,88 @@ export function VocabularyPage() {
           </div>
         )}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredVocabulary.map((item) => (
-            <VocabularyCard
-              key={item.id}
-              vocabulary={item}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onView={handleView}
-            />
-          ))}
-          
-          {filteredVocabulary.length === 0 && (
-            <div className="text-center py-8 sm:py-12 col-span-full">
-              <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">
-                {searchTerm ? 'No vocabulary found matching your search.' : 'No vocabulary entries yet.'}
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Render based on view mode */}
+        {viewMode === 'alphabet' ? (
+          <div className="space-y-6">
+            {Object.keys(alphabeticalGroups).sort().map((letter) => (
+              <div key={letter}>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">
+                  {letter}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {alphabeticalGroups[letter].map((item) => (
+                    <VocabularyCard
+                      key={item.id}
+                      vocabulary={item}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onView={handleView}
+                      onShare={handleShare}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : viewMode === 'list' ? (
+          <div className="space-y-3">
+            {filteredVocabulary.map((item) => (
+              <div key={item.id} className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
+                      <span className="text-sm text-slate-500">
+                        {format(new Date(item.date), 'MMM dd, yyyy')}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                      {stripHtml(item.meaning)}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <button
+                      onClick={() => handleShare(item)}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Share"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleView(item)}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="View"
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredVocabulary.map((item) => (
+              <VocabularyCard
+                key={item.id}
+                vocabulary={item}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onView={handleView}
+                onShare={handleShare}
+              />
+            ))}
+          </div>
+        )}
+        
+        {filteredVocabulary.length === 0 && (
+          <div className="text-center py-8 sm:py-12">
+            <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500">
+              {searchTerm ? 'No vocabulary found matching your search.' : 'No vocabulary entries yet.'}
+            </p>
+          </div>
+        )}
       </div>
 
       <DetailModal
@@ -239,6 +346,13 @@ export function VocabularyPage() {
           if (viewingItem) handleEdit(viewingItem);
           setViewingItem(null);
         }}
+      />
+
+      <ShareModal
+        isOpen={!!sharingItem}
+        onClose={() => setSharingItem(null)}
+        data={sharingItem}
+        type="vocabulary"
       />
 
       {showForm && (
@@ -263,31 +377,32 @@ export function VocabularyPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Meaning*</label>
-                <RichTextEditor
+                <textarea
+                  required
                   value={formData.meaning}
-                  onChange={(value) => setFormData({...formData, meaning: value})}
+                  onChange={(e) => setFormData({...formData, meaning: e.target.value})}
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-24 resize-none"
                   placeholder="Enter the meaning"
-                  height="120px"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Context</label>
-                <RichTextEditor
+                <textarea
                   value={formData.context}
-                  onChange={(value) => setFormData({...formData, context: value})}
+                  onChange={(e) => setFormData({...formData, context: e.target.value})}
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-20 resize-none"
                   placeholder="Usage example or context"
-                  height="100px"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Moment of Memory</label>
-                <RichTextEditor
+                <SmartDropdown
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
+                  options={existingMoments}
                   placeholder="How you remembered this word"
-                  height="80px"
                 />
               </div>
               
