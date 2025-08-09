@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Brain, TrendingUp, Calendar } from 'lucide-react';
+import { BookOpen, Brain, TrendingUp, Calendar, Globe } from 'lucide-react';
 import { useVocabulary, useSikho } from '../hooks/useSupabase';
 import { format } from 'date-fns';
 
@@ -10,6 +10,23 @@ export function Dashboard() {
 
   const recentVocabulary = vocabulary.slice(0, 5);
   const recentSikho = sikho.slice(0, 5);
+
+  // Get unique languages from both vocabulary and sikho
+  const vocabularyLanguages = [...new Set(vocabulary.map(v => v.language).filter(Boolean))];
+  const sikhoLanguages = [...new Set(sikho.map(s => s.language).filter(Boolean))];
+  const allLanguages = [...new Set([...vocabularyLanguages, ...sikhoLanguages])];
+
+  // Language colors for cards
+  const languageColors = [
+    'bg-blue-500',
+    'bg-emerald-500', 
+    'bg-purple-500',
+    'bg-orange-500',
+    'bg-pink-500',
+    'bg-indigo-500',
+    'bg-teal-500',
+    'bg-red-500'
+  ];
 
   const stats = [
     {
@@ -71,6 +88,57 @@ export function Dashboard() {
           );
         })}
       </div>
+
+      {/* Language Cards Section */}
+      {allLanguages.length > 0 && (
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center">
+              <Globe className="h-5 w-5 mr-2 text-blue-600" />
+              Languages
+            </h2>
+            <span className="text-sm text-slate-500">{allLanguages.length} languages</span>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {allLanguages.map((language, index) => {
+              const vocabularyCount = vocabulary.filter(v => v.language === language).length;
+              const sikhoCount = sikho.filter(s => s.language === language).length;
+              const totalCount = vocabularyCount + sikhoCount;
+              const colorClass = languageColors[index % languageColors.length];
+              
+              return (
+                <div key={language} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className={`absolute inset-0 ${colorClass} opacity-90 group-hover:opacity-100 transition-opacity`}></div>
+                  <div className="relative z-10 p-4 text-white">
+                    <h3 className="font-bold text-sm sm:text-base mb-2 truncate">{language}</h3>
+                    <div className="space-y-1">
+                      <Link
+                        to={`/vocabulary?language=${encodeURIComponent(language)}`}
+                        className="block text-xs opacity-90 hover:opacity-100 hover:underline"
+                      >
+                        {vocabularyCount} vocabulary →
+                      </Link>
+                      <Link
+                        to={`/sikho?language=${encodeURIComponent(language)}`}
+                        className="block text-xs opacity-90 hover:opacity-100 hover:underline"
+                      >
+                        {sikhoCount} sikho →
+                      </Link>
+                    </div>
+                    <div className="text-xs font-medium mt-2 opacity-75">
+                      {totalCount} total entries
+                    </div>
+                  </div>
+                  <div className="absolute top-2 right-2 opacity-20">
+                    <Globe className="h-6 w-6" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">

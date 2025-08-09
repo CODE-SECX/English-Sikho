@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Share2, ChevronDown } from 'lucide-react';
 import { useVocabulary } from '../hooks/useSupabase';
 import { format } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 import type { Vocabulary } from '../types';
 import { VocabularyCard } from './VocabularyCard';
 import { DetailModal } from './DetailModal';
@@ -10,6 +11,7 @@ import { ShareModal } from './ShareModal';
 
 export function VocabularyPage() {
   const { vocabulary, loading, addVocabulary, updateVocabulary, deleteVocabulary } = useVocabulary();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Vocabulary | null>(null);
   const [viewingItem, setViewingItem] = useState<Vocabulary | null>(null);
@@ -29,6 +31,15 @@ export function VocabularyPage() {
     language: 'English',
     date: format(new Date(), 'yyyy-MM-dd')
   });
+
+  // Handle URL parameters for language filtering
+  useEffect(() => {
+    const languageParam = searchParams.get('language');
+    if (languageParam) {
+      setLanguageFilter(languageParam);
+      setShowFilters(true); // Show filters when language is pre-selected
+    }
+  }, [searchParams]);
 
   // Get unique moment of memory values for dropdown
   const existingMoments = [...new Set(vocabulary.map(v => v.moment_of_memory).filter(Boolean))];

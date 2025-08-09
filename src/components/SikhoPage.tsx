@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X } from 'lucide-react';
 import { useSikho, useCategories } from '../hooks/useSupabase';
 import { format } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 import type { Sikho } from '../types';
 import { SikhoCard } from './SikhoCard';
 import { DetailModal } from './DetailModal';
@@ -11,6 +12,7 @@ import { SmartDropdown } from './SmartDropdown';
 export function SikhoPage() {
   const { sikho, loading, addSikho, updateSikho, deleteSikho } = useSikho();
   const { categories } = useCategories();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Sikho | null>(null);
   const [viewingItem, setViewingItem] = useState<Sikho | null>(null);
@@ -29,6 +31,15 @@ export function SikhoPage() {
     language: 'English',
     date: format(new Date(), 'yyyy-MM-dd')
   });
+
+  // Handle URL parameters for language filtering
+  useEffect(() => {
+    const languageParam = searchParams.get('language');
+    if (languageParam) {
+      setLanguageFilter(languageParam);
+      setShowFilters(true); // Show filters when language is pre-selected
+    }
+  }, [searchParams]);
 
   const stripHtml = (html: string) => {
     const tmp = document.createElement('div');
