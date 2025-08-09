@@ -16,6 +16,7 @@ export function SikhoPage() {
   const [viewingItem, setViewingItem] = useState<Sikho | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'title' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [dateFilter, setDateFilter] = useState('');
@@ -25,6 +26,7 @@ export function SikhoPage() {
     description: '',
     moment_of_memory: '',
     category_id: '',
+    language: 'English',
     date: format(new Date(), 'yyyy-MM-dd')
   });
 
@@ -33,6 +35,9 @@ export function SikhoPage() {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   };
+
+  // Get unique languages for filter
+  const availableLanguages = [...new Set(sikho.map(s => s.language).filter(Boolean))];
 
   const filteredSikho = sikho
     .filter(item => {
@@ -43,8 +48,9 @@ export function SikhoPage() {
       
       const matchesCategory = !selectedCategory || item.category_id === selectedCategory;
       const matchesDate = !dateFilter || item.date === dateFilter;
+      const matchesLanguage = !languageFilter || item.language === languageFilter;
       
-      return matchesSearch && matchesCategory && matchesDate;
+      return matchesSearch && matchesCategory && matchesDate && matchesLanguage;
     })
     .sort((a, b) => {
       let aValue: string | Date;
@@ -91,6 +97,7 @@ export function SikhoPage() {
       description: item.description,
       moment_of_memory: item.moment_of_memory,
       category_id: item.category_id || '',
+      language: item.language,
       date: item.date
     });
     setShowForm(true);
@@ -112,6 +119,7 @@ export function SikhoPage() {
       description: '',
       moment_of_memory: '',
       category_id: '',
+      language: 'English',
       date: format(new Date(), 'yyyy-MM-dd')
     });
     setEditingItem(null);
@@ -121,6 +129,7 @@ export function SikhoPage() {
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('');
+    setLanguageFilter('');
     setDateFilter('');
     setSortBy('created_at');
     setSortOrder('desc');
@@ -150,6 +159,35 @@ export function SikhoPage() {
         </button>
       </div>
 
+      {/* Language Filter Pills */}
+      {availableLanguages.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-4 justify-center">
+          <button
+            onClick={() => setLanguageFilter('')}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              !languageFilter
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-white/70 text-slate-600 hover:bg-slate-100 border border-slate-200'
+            }`}
+          >
+            All Languages
+          </button>
+          {availableLanguages.map((language) => (
+            <button
+              key={language}
+              onClick={() => setLanguageFilter(language)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                languageFilter === language
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-white/70 text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {language}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center space-x-2 flex-1">
@@ -167,7 +205,7 @@ export function SikhoPage() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-4 py-2 rounded-lg border transition-colors flex items-center ${
-                showFilters || selectedCategory || dateFilter
+                showFilters || selectedCategory || dateFilter || languageFilter
                   ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
                   : 'border-slate-300 text-slate-600 hover:bg-slate-50'
               } text-sm sm:text-base flex-1 sm:flex-none justify-center`}
@@ -187,7 +225,7 @@ export function SikhoPage() {
         
         {showFilters && (
           <div className="bg-slate-50 rounded-lg p-3 sm:p-4 mb-6 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Sort by</label>
                 <select
@@ -216,6 +254,20 @@ export function SikhoPage() {
               </div>
               
               <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
+                <select
+                  value={languageFilter}
+                  onChange={(e) => setLanguageFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                >
+                  <option value="">All Languages</option>
+                  {availableLanguages.map(language => (
+                    <option key={language} value={language}>{language}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Date</label>
                 <input
                   type="date"
@@ -225,7 +277,7 @@ export function SikhoPage() {
                 />
               </div>
               
-              <div className="flex items-end sm:col-span-2 lg:col-span-1">
+              <div className="flex items-end">
                 <button
                   onClick={clearFilters}
                   className="w-full sm:w-auto px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-200 rounded-lg transition-colors flex items-center justify-center text-sm"
@@ -253,7 +305,7 @@ export function SikhoPage() {
             <div className="text-center py-8 sm:py-12 col-span-full">
               <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500">
-                {searchTerm || selectedCategory ? 'No entries found matching your criteria.' : 'No sikho entries yet.'}
+                {searchTerm || selectedCategory || languageFilter ? 'No entries found matching your criteria.' : 'No sikho entries yet.'}
               </p>
             </div>
           )}
@@ -304,6 +356,37 @@ export function SikhoPage() {
                   ))}
                 </select>
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Language*</label>
+                <select
+                  required
+                  value={formData.language}
+                  onChange={(e) => setFormData({...formData, language: e.target.value})}
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
+                >
+                  <option value="English">English</option>
+                  <option value="Gujarati">Gujarati</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              
+              {formData.language === 'Other' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Custom Language</label>
+                  <input
+                    type="text"
+                    value={formData.language === 'Other' ? '' : formData.language}
+                    onChange={(e) => setFormData({...formData, language: e.target.value})}
+                    className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base"
+                    placeholder="Enter custom language"
+                  />
+                </div>
+              )}
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Description*</label>

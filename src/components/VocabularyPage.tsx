@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import type { Vocabulary } from '../types';
 import { VocabularyCard } from './VocabularyCard';
 import { DetailModal } from './DetailModal';
-import { SmartDropdown } from './SmartDropdown';
+import { RichTextEditor } from './RichTextEditor';
 import { ShareModal } from './ShareModal';
 
 export function VocabularyPage() {
@@ -18,6 +18,7 @@ export function VocabularyPage() {
   const [sortBy, setSortBy] = useState<'date' | 'word' | 'created_at'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [dateFilter, setDateFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'alphabet'>('grid');
   const [formData, setFormData] = useState({
@@ -25,22 +26,27 @@ export function VocabularyPage() {
     meaning: '',
     context: '',
     moment_of_memory: '',
+    language: 'English',
     date: format(new Date(), 'yyyy-MM-dd')
   });
 
   // Get unique moment of memory values for dropdown
   const existingMoments = [...new Set(vocabulary.map(v => v.moment_of_memory).filter(Boolean))];
+  
+  // Get unique languages for filter
+  const availableLanguages = [...new Set(vocabulary.map(v => v.language).filter(Boolean))];
 
   const filteredVocabulary = vocabulary
     .filter(item => {
       const matchesSearch = 
         item.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.meaning.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.context.toLowerCase().includes(searchTerm.toLowerCase());
+        stripHtml(item.meaning).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stripHtml(item.context).toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesDate = !dateFilter || item.date === dateFilter;
+      const matchesLanguage = !languageFilter || item.language === languageFilter;
       
-      return matchesSearch && matchesDate;
+      return matchesSearch && matchesDate && matchesLanguage;
     })
     .sort((a, b) => {
       let aValue: string | Date;
@@ -102,6 +108,7 @@ export function VocabularyPage() {
       meaning: item.meaning,
       context: item.context,
       moment_of_memory: item.moment_of_memory,
+      language: item.language,
       date: item.date
     });
     setShowForm(true);
@@ -123,6 +130,7 @@ export function VocabularyPage() {
       meaning: '',
       context: '',
       moment_of_memory: '',
+      language: 'English',
       date: format(new Date(), 'yyyy-MM-dd')
     });
     setEditingItem(null);
@@ -132,6 +140,7 @@ export function VocabularyPage() {
   const clearFilters = () => {
     setSearchTerm('');
     setDateFilter('');
+    setLanguageFilter('');
     setSortBy('created_at');
     setSortOrder('desc');
   };
@@ -179,6 +188,35 @@ export function VocabularyPage() {
         </div>
       </div>
 
+      {/* Language Filter Pills */}
+      {availableLanguages.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-4 justify-center">
+          <button
+            onClick={() => setLanguageFilter('')}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              !languageFilter
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-white/70 text-slate-600 hover:bg-slate-100 border border-slate-200'
+            }`}
+          >
+            All Languages
+          </button>
+          {availableLanguages.map((language) => (
+            <button
+              key={language}
+              onClick={() => setLanguageFilter(language)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                languageFilter === language
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white/70 text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {language}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/60">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center space-x-2 flex-1">
@@ -196,7 +234,7 @@ export function VocabularyPage() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-4 py-2 rounded-lg border transition-colors flex items-center ${
-                showFilters || dateFilter
+                showFilters || dateFilter || languageFilter
                   ? 'bg-blue-100 border-blue-300 text-blue-700'
                   : 'border-slate-300 text-slate-600 hover:bg-slate-50'
               } text-sm sm:text-base flex-1 sm:flex-none justify-center`}
@@ -216,7 +254,7 @@ export function VocabularyPage() {
         
         {showFilters && (
           <div className="bg-slate-50 rounded-lg p-3 sm:p-4 mb-6 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Sort by</label>
                 <select
@@ -231,6 +269,20 @@ export function VocabularyPage() {
               </div>
               
               <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
+                <select
+                  value={languageFilter}
+                  onChange={(e) => setLanguageFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                >
+                  <option value="">All Languages</option>
+                  {availableLanguages.map(language => (
+                    <option key={language} value={language}>{language}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Date</label>
                 <input
                   type="date"
@@ -240,7 +292,7 @@ export function VocabularyPage() {
                 />
               </div>
               
-              <div className="flex items-end sm:col-span-2 lg:col-span-1">
+              <div className="flex items-end">
                 <button
                   onClick={clearFilters}
                   className="w-full sm:w-auto px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-200 rounded-lg transition-colors flex items-center justify-center text-sm"
@@ -331,7 +383,7 @@ export function VocabularyPage() {
           <div className="text-center py-8 sm:py-12">
             <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
             <p className="text-slate-500">
-              {searchTerm ? 'No vocabulary found matching your search.' : 'No vocabulary entries yet.'}
+              {searchTerm || languageFilter ? 'No vocabulary found matching your criteria.' : 'No vocabulary entries yet.'}
             </p>
           </div>
         )}
@@ -377,32 +429,72 @@ export function VocabularyPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Meaning*</label>
-                <textarea
-                  required
+                <RichTextEditor
                   value={formData.meaning}
-                  onChange={(e) => setFormData({...formData, meaning: e.target.value})}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-24 resize-none"
+                  onChange={(value) => setFormData({...formData, meaning: value})}
                   placeholder="Enter the meaning"
+                  height="120px"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Context</label>
-                <textarea
+                <RichTextEditor
                   value={formData.context}
-                  onChange={(e) => setFormData({...formData, context: e.target.value})}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-20 resize-none"
+                  onChange={(value) => setFormData({...formData, context: value})}
                   placeholder="Usage example or context"
+                  height="100px"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Moment of Memory</label>
-                <SmartDropdown
+                <RichTextEditor
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
-                  options={existingMoments}
                   placeholder="How you remembered this word"
+                  height="100px"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Language*</label>
+                <select
+                  required
+                  value={formData.language}
+                  onChange={(e) => setFormData({...formData, language: e.target.value})}
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                >
+                  <option value="English">English</option>
+                  <option value="Gujarati">Gujarati</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              
+              {formData.language === 'Other' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Custom Language</label>
+                  <input
+                    type="text"
+                    value={formData.language === 'Other' ? '' : formData.language}
+                    onChange={(e) => setFormData({...formData, language: e.target.value})}
+                    className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                    placeholder="Enter custom language"
+                  />
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
               

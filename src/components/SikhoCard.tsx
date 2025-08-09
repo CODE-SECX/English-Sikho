@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Edit2, Trash2, Eye, Tag, Brain } from 'lucide-react';
+import { Calendar, Edit2, Trash2, Eye, Tag, Brain, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Sikho } from '../types';
 
@@ -34,6 +34,9 @@ export function SikhoCard({ sikho, onEdit, onDelete, onView }: SikhoCardProps) {
             <div className="flex items-center text-xs sm:text-sm text-slate-500">
               <Calendar className="h-3 w-3 mr-1" />
               {format(new Date(sikho.date), 'MMM dd, yyyy')}
+              <span className="mx-2">•</span>
+              <Globe className="h-3 w-3 mr-1" />
+              {sikho.language}
             </div>
           </div>
         </div>

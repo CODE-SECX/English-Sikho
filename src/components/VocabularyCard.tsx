@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Edit2, Trash2, Eye, BookOpen, Share2 } from 'lucide-react';
+import { Calendar, Edit2, Trash2, Eye, BookOpen, Share2, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Vocabulary } from '../types';
 
@@ -35,6 +35,9 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView, onShare }
             <div className="flex items-center text-xs sm:text-sm text-slate-500">
               <Calendar className="h-3 w-3 mr-1" />
               {format(new Date(vocabulary.date), 'MMM dd, yyyy')}
+              <span className="mx-2">•</span>
+              <Globe className="h-3 w-3 mr-1" />
+              {vocabulary.language}
             </div>
           </div>
         </div>

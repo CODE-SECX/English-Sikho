@@ -12,6 +12,7 @@ export interface Vocabulary {
   meaning: string;
   context: string;
   moment_of_memory: string;
+  language: string;
   date: string;
   created_at: string;
 }
@@ -22,6 +23,7 @@ export interface Sikho {
   description: string;
   moment_of_memory: string;
   category_id: string | null;
+  language: string;
   date: string;
   created_at: string;
   category?: Category;
