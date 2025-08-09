@@ -335,8 +335,8 @@ export function SikhoPage() {
       />
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-8 shadow-2xl">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingItem ? 'Edit Sikho Entry' : 'Add New Sikho Entry'}
             </h2>
@@ -379,6 +379,7 @@ export function SikhoPage() {
                   <option value="English">English</option>
                   <option value="Gujarati">Gujarati</option>
                   <option value="Hindi">Hindi</option>
+                  <option value="Sanskrit">Sanskrit</option>
                   <option value="Spanish">Spanish</option>
                   <option value="French">French</option>
                   <option value="German">German</option>
