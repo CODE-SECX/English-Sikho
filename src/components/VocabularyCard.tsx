@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Edit2, Trash2, Eye, BookOpen, Share2, Globe } from 'lucide-react';
+import { Calendar, Edit2, Trash2, BookOpen, Share2, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Vocabulary } from '../types';
 
@@ -24,7 +24,10 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView, onShare }
   };
 
   return (
-    <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-slate-200/60 hover:border-slate-300/60 hover:shadow-lg transition-all duration-300 group">
+    <div 
+      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-slate-200/60 hover:border-slate-300/60 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+      onClick={() => onView(vocabulary)}
+    >
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
           <div className="bg-blue-100 p-2 rounded-lg">
@@ -45,29 +48,32 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView, onShare }
         <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
           {onShare && (
             <button
-              onClick={() => onShare(vocabulary)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare(vocabulary);
+              }}
               className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
               title="Share"
             >
               <Share2 className="h-4 w-4" />
             </button>
           )}
+
           <button
-            onClick={() => onView(vocabulary)}
-            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="View details"
-          >
-            <Eye className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => onEdit(vocabulary)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(vocabulary);
+            }}
             className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
             title="Edit"
           >
             <Edit2 className="h-4 w-4" />
           </button>
           <button
-            onClick={() => onDelete(vocabulary.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(vocabulary.id);
+            }}
             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             title="Delete"
           >
@@ -96,12 +102,9 @@ export function VocabularyCard({ vocabulary, onEdit, onDelete, onView, onShare }
         </div>
       )}
       
-      <button
-        onClick={() => onView(vocabulary)}
-        className="mt-3 text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        View full details →
-      </button>
+      <div className="mt-3 text-xs sm:text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+        Click to view full details →
+      </div>
     </div>
   );
 }

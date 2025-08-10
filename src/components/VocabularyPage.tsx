@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Share2, ChevronDown } from 'lucide-react';
+import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Share2, ChevronDown, Edit2, Trash2 } from 'lucide-react';
 import { useVocabulary } from '../hooks/useSupabase';
 import { format } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
@@ -324,16 +324,60 @@ export function VocabularyPage() {
                 <h3 className="text-lg font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">
                   {letter}
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-3">
                   {alphabeticalGroups[letter].map((item) => (
-                    <VocabularyCard
-                      key={item.id}
-                      vocabulary={item}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onView={handleView}
-                      onShare={handleShare}
-                    />
+                    <div 
+                      key={item.id} 
+                      className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all cursor-pointer"
+                      onClick={() => handleView(item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
+                            <span className="text-sm text-slate-500">
+                              {format(new Date(item.date), 'MMM dd, yyyy')}
+                            </span>
+                            <span className="text-xs text-slate-400">• {item.language}</span>
+                          </div>
+                          <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                            {stripHtml(item.meaning)}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2 ml-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShare(item);
+                            }}
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Share"
+                          >
+                            <Share2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(item);
+                            }}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(item.id);
+                            }}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>

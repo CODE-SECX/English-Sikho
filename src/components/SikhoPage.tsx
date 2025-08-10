@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X } from 'lucide-react';
+import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Edit2, Trash2, Grid3X3, List, Tag, Brain, Globe } from 'lucide-react';
 import { useSikho, useCategories } from '../hooks/useSupabase';
 import { format } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
@@ -23,6 +23,7 @@ export function SikhoPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [dateFilter, setDateFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -213,6 +214,32 @@ export function SikhoPage() {
           </div>
           
           <div className="flex gap-2 w-full sm:w-auto">
+            {/* View Mode Toggle */}
+            <div className="flex border border-slate-300 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-2 flex items-center justify-center transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+                title="Grid view"
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-2 flex items-center justify-center transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+                title="List view"
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
+            
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-4 py-2 rounded-lg border transition-colors flex items-center ${
@@ -301,26 +328,85 @@ export function SikhoPage() {
           </div>
         )}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredSikho.map((item) => (
-            <SikhoCard
-              key={item.id}
-              sikho={item}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onView={handleView}
-            />
-          ))}
-          
-          {filteredSikho.length === 0 && (
-            <div className="text-center py-8 sm:py-12 col-span-full">
-              <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">
-                {searchTerm || selectedCategory || languageFilter ? 'No entries found matching your criteria.' : 'No sikho entries yet.'}
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Render based on view mode */}
+        {viewMode === 'list' ? (
+          <div className="space-y-3">
+            {filteredSikho.map((item) => (
+              <div 
+                key={item.id} 
+                className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all cursor-pointer"
+                onClick={() => handleView(item)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
+                      <span className="text-sm text-slate-500">
+                        {format(new Date(item.date), 'MMM dd, yyyy')}
+                      </span>
+                      <span className="text-xs text-slate-400">• {item.language}</span>
+                      {item.category && (
+                        <span
+                          className="inline-flex items-center px-2 py-1 text-xs rounded-full text-white"
+                          style={{ backgroundColor: item.category.color }}
+                        >
+                          <Tag className="h-3 w-3 mr-1" />
+                          {item.category.name}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                      {stripHtml(item.description)}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(item);
+                      }}
+                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      title="Edit"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item.id);
+                      }}
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredSikho.map((item) => (
+              <SikhoCard
+                key={item.id}
+                sikho={item}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onView={handleView}
+              />
+            ))}
+          </div>
+        )}
+        
+        {filteredSikho.length === 0 && (
+          <div className="text-center py-8 sm:py-12">
+            <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500">
+              {searchTerm || selectedCategory || languageFilter ? 'No entries found matching your criteria.' : 'No sikho entries yet.'}
+            </p>
+          </div>
+        )}
       </div>
 
       <DetailModal
