@@ -391,51 +391,13 @@ export function VocabularyPage() {
                 className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-slate-200/60 hover:border-slate-300/60 transition-all cursor-pointer"
                 onClick={() => handleView(item)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
-                      <span className="text-sm text-slate-500">
-                        {format(new Date(item.date), 'MMM dd, yyyy')}
-                      </span>
-                      <span className="text-xs text-slate-400">• {item.language}</span>
-                    </div>
-                    <p className="text-sm text-slate-700 mt-1 line-clamp-2">
-                      {stripHtml(item.meaning)}
-                    </p>
+                <div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
                   </div>
-                  <div className="flex space-x-2 ml-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShare(item);
-                      }}
-                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Share"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(item);
-                      }}
-                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item.id);
-                      }}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                    {stripHtml(item.meaning)}
+                  </p>
                 </div>
               </div>
             ))}
