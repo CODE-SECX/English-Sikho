@@ -447,12 +447,12 @@ export function VocabularyPage() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-lg my-8 shadow-2xl">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-4 sm:my-8 shadow-2xl max-h-[95vh] overflow-y-auto">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingItem ? 'Edit Vocabulary' : 'Add New Vocabulary'}
             </h2>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Word*</label>
                 <input
@@ -471,7 +471,7 @@ export function VocabularyPage() {
                   value={formData.meaning}
                   onChange={(value) => setFormData({...formData, meaning: value})}
                   placeholder="Enter the meaning"
-                  height="120px"
+                  height="140px"
                 />
               </div>
               
@@ -481,7 +481,7 @@ export function VocabularyPage() {
                   value={formData.context}
                   onChange={(value) => setFormData({...formData, context: value})}
                   placeholder="Usage example or context"
-                  height="100px"
+                  height="120px"
                 />
               </div>
               
@@ -491,11 +491,12 @@ export function VocabularyPage() {
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
                   placeholder="How you remembered this word"
-                  height="100px"
+                  height="120px"
                 />
               </div>
               
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Language*</label>
                 <select
                   required
@@ -512,42 +513,33 @@ export function VocabularyPage() {
                   <option value="German">German</option>
                   <option value="Other">Other</option>
                 </select>
+                </div>
+              
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                  <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({...formData, date: e.target.value})}
+                    className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  />
+                </div>
               </div>
               
               {formData.language === 'Other' && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Custom Language</label>
-                  <input
+                <input
                     type="text"
                     value={formData.language === 'Other' ? '' : formData.language}
                     onChange={(e) => setFormData({...formData, language: e.target.value})}
-                    className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="Enter custom language"
-                  />
+                />
                 </div>
               )}
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                />
-              </div>
-              
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"

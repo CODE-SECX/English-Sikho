@@ -385,12 +385,12 @@ export function SikhoPage() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-8 shadow-2xl">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-4 sm:my-8 shadow-2xl max-h-[95vh] overflow-y-auto">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingItem ? 'Edit Sikho Entry' : 'Add New Sikho Entry'}
             </h2>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Title*</label>
                 <input
@@ -403,7 +403,8 @@ export function SikhoPage() {
                 />
               </div>
               
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
                 <select
                   value={formData.category_id}
@@ -415,9 +416,9 @@ export function SikhoPage() {
                     <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
-              </div>
+                </div>
               
-              <div>
+                <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Language*</label>
                 <select
                   required
@@ -434,6 +435,7 @@ export function SikhoPage() {
                   <option value="German">German</option>
                   <option value="Other">Other</option>
                 </select>
+                </div>
               </div>
               
               {formData.language === 'Other' && (
@@ -455,7 +457,7 @@ export function SikhoPage() {
                   value={formData.description}
                   onChange={(value) => setFormData({...formData, description: value})}
                   placeholder="Enter your learning notes and insights"
-                  height="150px"
+                  height="160px"
                 />
               </div>
               
@@ -479,7 +481,7 @@ export function SikhoPage() {
                 />
               </div>
               
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors font-medium text-sm sm:text-base"
