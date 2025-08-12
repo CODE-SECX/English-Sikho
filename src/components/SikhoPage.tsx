@@ -354,8 +354,6 @@ export function SikhoPage() {
               <SikhoCard
                 key={item.id}
                 sikho={item}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
                 onView={handleView}
               />
             ))}

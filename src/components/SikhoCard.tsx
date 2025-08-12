@@ -1,16 +1,13 @@
 import React from 'react';
-import { Calendar, Edit2, Trash2, Tag, Brain, Globe } from 'lucide-react';
-import { format } from 'date-fns';
+import { Tag, Brain } from 'lucide-react';
 import type { Sikho } from '../types';
 
 interface SikhoCardProps {
   sikho: Sikho;
-  onEdit: (sikho: Sikho) => void;
-  onDelete: (id: string) => void;
   onView: (sikho: Sikho) => void;
 }
 
-export function SikhoCard({ sikho, onEdit, onDelete, onView }: SikhoCardProps) {
+export function SikhoCard({ sikho, onView }: SikhoCardProps) {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
@@ -27,45 +24,12 @@ export function SikhoCard({ sikho, onEdit, onDelete, onView }: SikhoCardProps) {
       className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-slate-200/60 hover:border-slate-300/60 hover:shadow-lg transition-all duration-300 group cursor-pointer"
       onClick={() => onView(sikho)}
     >
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-3">
-          <div className="bg-emerald-100 p-2 rounded-lg">
-            <Brain className="h-4 w-4 text-emerald-600" />
-          </div>
-          <div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">{sikho.title}</h3>
-            <div className="flex items-center text-xs sm:text-sm text-slate-500">
-              <Calendar className="h-3 w-3 mr-1" />
-              {format(new Date(sikho.date), 'MMM dd, yyyy')}
-              <span className="mx-2">•</span>
-              <Globe className="h-3 w-3 mr-1" />
-              {sikho.language}
-            </div>
-          </div>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="bg-emerald-100 p-2 rounded-lg">
+          <Brain className="h-4 w-4 text-emerald-600" />
         </div>
-        
-        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(sikho);
-            }}
-            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-            title="Edit"
-          >
-            <Edit2 className="h-4 w-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(sikho.id);
-            }}
-            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+        <div>
+          <h3 className="text-base sm:text-lg font-bold text-slate-900">{sikho.title}</h3>
         </div>
       </div>
       
