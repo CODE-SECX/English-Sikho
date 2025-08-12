@@ -156,12 +156,12 @@ export function AdminPage() {
       {/* Category Form Modal */}
       {showCategoryForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingCategory ? 'Edit Category' : 'Add New Category'}
             </h2>
             
-            <form onSubmit={handleCategorySubmit} className="space-y-4">
+            <form onSubmit={handleCategorySubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Name*</label>
                 <input
@@ -179,7 +179,7 @@ export function AdminPage() {
                 <textarea
                   value={categoryForm.description}
                   onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent h-16 sm:h-20 resize-none text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent h-20 sm:h-24 resize-none text-sm sm:text-base leading-relaxed"
                   placeholder="Optional description"
                 />
               </div>
@@ -189,13 +189,13 @@ export function AdminPage() {
                   <Palette className="h-4 w-4 mr-1" />
                   Color
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3 p-2">
                   {colorOptions.map((color) => (
                     <button
                       key={color}
                       type="button"
                       onClick={() => setCategoryForm({...categoryForm, color})}
-                      className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                      className={`w-10 h-10 rounded-lg border-2 transition-all ${
                         categoryForm.color === color 
                           ? 'border-slate-400 scale-110' 
                           : 'border-slate-200 hover:border-slate-300'
@@ -206,7 +206,7 @@ export function AdminPage() {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-1 bg-purple-600 text-white py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm sm:text-base"

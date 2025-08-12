@@ -60,7 +60,7 @@ export function SmartDropdown({ value, onChange, options, placeholder }: SmartDr
   };
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div ref={dropdownRef} className="relative mb-4">
       <div className="relative">
         <textarea
           ref={inputRef}
@@ -69,7 +69,7 @@ export function SmartDropdown({ value, onChange, options, placeholder }: SmartDr
           onKeyDown={handleKeyDown}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full px-3 sm:px-4 py-2.5 pr-10 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-20 resize-none"
+          className="w-full px-3 sm:px-4 py-2.5 pr-10 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base h-20 resize-none leading-relaxed"
         />
         <button
           type="button"
@@ -81,13 +81,13 @@ export function SmartDropdown({ value, onChange, options, placeholder }: SmartDr
       </div>
 
       {isOpen && filteredOptions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-20 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
           {filteredOptions.map((option, index) => (
             <button
               key={index}
               type="button"
               onClick={() => handleOptionSelect(option)}
-              className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-slate-100 last:border-b-0"
+              className="w-full px-4 py-3 text-left text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-slate-100 last:border-b-0"
             >
               <div className="flex items-center">
                 <Plus className="h-3 w-3 mr-2 text-slate-400" />
