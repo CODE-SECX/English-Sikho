@@ -355,6 +355,7 @@ export function SikhoPage() {
                 key={item.id}
                 sikho={item}
                 onView={handleView}
+                onDelete={handleDelete}
               />
             ))}
           </div>

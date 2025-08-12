@@ -1,13 +1,14 @@
 import React from 'react';
-import { Tag, Brain } from 'lucide-react';
+import { Tag, Brain, Trash2 } from 'lucide-react';
 import type { Sikho } from '../types';
 
 interface SikhoCardProps {
   sikho: Sikho;
   onView: (sikho: Sikho) => void;
+  onDelete: (id: string) => void;
 }
 
-export function SikhoCard({ sikho, onView }: SikhoCardProps) {
+export function SikhoCard({ sikho, onView, onDelete }: SikhoCardProps) {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
@@ -19,11 +20,24 @@ export function SikhoCard({ sikho, onView }: SikhoCardProps) {
     return tmp.textContent || tmp.innerText || '';
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(sikho.id);
+  };
+
   return (
     <div 
-      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-slate-200/60 hover:border-slate-300/60 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-slate-200/60 hover:border-slate-300/60 hover:shadow-lg transition-all duration-300 group cursor-pointer relative"
       onClick={() => onView(sikho)}
     >
+      <button
+        onClick={handleDelete}
+        className="absolute top-3 right-3 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+        title="Delete entry"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+      
       <div className="flex items-center gap-3 mb-3">
         <div className="bg-emerald-100 p-2 rounded-lg">
           <Brain className="h-4 w-4 text-emerald-600" />

@@ -375,6 +375,7 @@ export function VocabularyPage() {
                 key={item.id}
                 vocabulary={item}
                 onView={handleView}
+                onDelete={handleDelete}
               />
             ))}
           </div>
