@@ -465,7 +465,7 @@ export function SikhoPage() {
                 <SmartDropdown
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
-                  options={[...new Set(sikho.map(s => s.moment_of_memory).filter(Boolean))]}
+                  options={[...new Set(sikho.map(s => s.moment_of_memory).filter(Boolean))].map(text => stripHtml(text))}
                   placeholder="How you learned or remembered this"
                 />
               </div>

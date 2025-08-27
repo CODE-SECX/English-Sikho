@@ -8,6 +8,7 @@ import { VocabularyCard } from './VocabularyCard';
 import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
 import { ShareModal } from './ShareModal';
+import { SmartDropdown } from './SmartDropdown';
 
 const stripHtml = (html: string) => {
     const tmp = document.createElement('div');
@@ -451,11 +452,11 @@ export function VocabularyPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Moment of Memory</label>
-                <RichTextEditor
+                <SmartDropdown
                   value={formData.moment_of_memory}
                   onChange={(value) => setFormData({...formData, moment_of_memory: value})}
+                  options={[...new Set(vocabulary.map(v => v.moment_of_memory).filter(Boolean))].map(text => stripHtml(text))}
                   placeholder="How you remembered this word"
-                  height="120px"
                 />
               </div>
               
