@@ -9,6 +9,12 @@ import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
 import { SmartDropdown } from './SmartDropdown';
 
+const stripHtml = (html: string) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
 export function SikhoPage() {
   const { sikho, loading, addSikho, updateSikho, deleteSikho } = useSikho();
   const { categories } = useCategories();
@@ -41,12 +47,6 @@ export function SikhoPage() {
       setShowFilters(true); // Show filters when language is pre-selected
     }
   }, [searchParams]);
-
-  const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  };
 
   // Get unique languages for filter
   const availableLanguages = [...new Set(sikho.map(s => s.language).filter(Boolean))];

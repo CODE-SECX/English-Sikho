@@ -9,6 +9,12 @@ import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
 import { ShareModal } from './ShareModal';
 
+const stripHtml = (html: string) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
 export function VocabularyPage() {
   const { vocabulary, loading, addVocabulary, updateVocabulary, deleteVocabulary } = useVocabulary();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -90,12 +96,6 @@ export function VocabularyPage() {
 
   const handleShare = (item: Vocabulary) => {
     setSharingItem(item);
-  };
-
-  const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
