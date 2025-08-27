@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Brain, Settings, Home } from 'lucide-react';
+import { Home, Book, LibraryBig, Settings, Brain, BookOpen } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,8 +12,9 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: Home },
-    { path: '/vocabulary', label: 'Vocabulary', icon: BookOpen },
-    { path: '/sikho', label: 'Sikho', icon: Brain },
+    { path: '/vocabulary', label: 'Vocabulary', icon: Book },
+    { path: '/sikho', label: 'Sikho', icon: LibraryBig },
+    { path: '/moments', label: 'Moments', icon: Brain },
     { path: '/admin', label: 'Admin', icon: Settings },
   ];
 
