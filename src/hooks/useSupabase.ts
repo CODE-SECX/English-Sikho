@@ -1,5 +1,18 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import {
+  createCategory as createCategoryApi,
+  createSikho as createSikhoApi,
+  createVocabulary as createVocabularyApi,
+  deleteCategory as deleteCategoryApi,
+  deleteSikho as deleteSikhoApi,
+  deleteVocabulary as deleteVocabularyApi,
+  getCategories,
+  getSikho,
+  getVocabulary,
+  updateCategory as updateCategoryApi,
+  updateSikho as updateSikhoApi,
+  updateVocabulary as updateVocabularyApi,
+} from '../lib/database';
 import type { Category, Vocabulary, Sikho } from '../types';
 
 export function useCategories() {
@@ -8,12 +21,7 @@ export function useCategories() {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
+      const data = await getCategories();
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -28,13 +36,7 @@ export function useCategories() {
 
   const addCategory = async (category: Omit<Category, 'id' | 'created_at'>) => {
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .insert([category])
-        .select()
-        .single();
-      
-      if (error) throw error;
+      const data = await createCategoryApi(category);
       await fetchCategories();
       return data;
     } catch (error) {
@@ -45,12 +47,7 @@ export function useCategories() {
 
   const updateCategory = async (id: string, updates: Partial<Category>) => {
     try {
-      const { error } = await supabase
-        .from('categories')
-        .update(updates)
-        .eq('id', id);
-      
-      if (error) throw error;
+      await updateCategoryApi(id, updates);
       await fetchCategories();
     } catch (error) {
       console.error('Error updating category:', error);
@@ -60,12 +57,7 @@ export function useCategories() {
 
   const deleteCategory = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('categories')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await deleteCategoryApi(id);
       await fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -89,12 +81,7 @@ export function useVocabulary() {
 
   const fetchVocabulary = async () => {
     try {
-      const { data, error } = await supabase
-        .from('vocabulary')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
+      const data = await getVocabulary();
       setVocabulary(data || []);
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
@@ -109,13 +96,7 @@ export function useVocabulary() {
 
   const addVocabulary = async (vocab: Omit<Vocabulary, 'id' | 'created_at'>) => {
     try {
-      const { data, error } = await supabase
-        .from('vocabulary')
-        .insert([vocab])
-        .select()
-        .single();
-      
-      if (error) throw error;
+      const data = await createVocabularyApi(vocab);
       await fetchVocabulary();
       return data;
     } catch (error) {
@@ -126,12 +107,7 @@ export function useVocabulary() {
 
   const updateVocabulary = async (id: string, updates: Partial<Vocabulary>) => {
     try {
-      const { error } = await supabase
-        .from('vocabulary')
-        .update(updates)
-        .eq('id', id);
-      
-      if (error) throw error;
+      await updateVocabularyApi(id, updates);
       await fetchVocabulary();
     } catch (error) {
       console.error('Error updating vocabulary:', error);
@@ -141,12 +117,7 @@ export function useVocabulary() {
 
   const deleteVocabulary = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('vocabulary')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await deleteVocabularyApi(id);
       await fetchVocabulary();
     } catch (error) {
       console.error('Error deleting vocabulary:', error);
@@ -170,15 +141,7 @@ export function useSikho() {
 
   const fetchSikho = async () => {
     try {
-      const { data, error } = await supabase
-        .from('sikho')
-        .select(`
-          *,
-          category:categories(*)
-        `)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
+      const data = await getSikho();
       setSikho(data || []);
     } catch (error) {
       console.error('Error fetching sikho:', error);
@@ -193,13 +156,7 @@ export function useSikho() {
 
   const addSikho = async (entry: Omit<Sikho, 'id' | 'created_at' | 'category'>) => {
     try {
-      const { data, error } = await supabase
-        .from('sikho')
-        .insert([entry])
-        .select()
-        .single();
-      
-      if (error) throw error;
+      const data = await createSikhoApi(entry);
       await fetchSikho();
       return data;
     } catch (error) {
@@ -210,12 +167,7 @@ export function useSikho() {
 
   const updateSikho = async (id: string, updates: Partial<Sikho>) => {
     try {
-      const { error } = await supabase
-        .from('sikho')
-        .update(updates)
-        .eq('id', id);
-      
-      if (error) throw error;
+      await updateSikhoApi(id, updates);
       await fetchSikho();
     } catch (error) {
       console.error('Error updating sikho:', error);
@@ -225,12 +177,7 @@ export function useSikho() {
 
   const deleteSikho = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('sikho')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      await deleteSikhoApi(id);
       await fetchSikho();
     } catch (error) {
       console.error('Error deleting sikho:', error);

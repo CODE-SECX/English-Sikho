@@ -18,7 +18,7 @@ A professional web application for managing English vocabulary and learning note
 
 ## Database Schema
 
-The application uses Supabase with the following tables:
+The application uses a Neon/Postgres database with the following tables:
 
 ### Categories
 - `id` (uuid, primary key)
@@ -47,14 +47,15 @@ The application uses Supabase with the following tables:
 
 ## Setup Instructions
 
-1. **Supabase Setup**:
-   - Create a new Supabase project
-   - Run the provided SQL migration file to set up the database schema
-   - Get your project URL and anon key
+1. **Neon/Postgres Setup**:
+   - Create or connect to your Neon project
+   - Ensure the public schema contains the expected tables
+   - Copy the connection string from Neon and configure it with `sslmode=require`
 
 2. **Environment Variables**:
    - Copy `.env.example` to `.env`
-   - Fill in your Supabase credentials
+   - Set `DATABASE_URL` to your Neon connection string
+   - Set `VITE_API_BASE_URL=/api` unless you are serving the API from another origin
 
 3. **Install Dependencies**:
    ```bash
@@ -71,13 +72,13 @@ The application uses Supabase with the following tables:
 - React 18 with TypeScript
 - Tailwind CSS for styling
 - React Router for navigation
-- Supabase for database and backend
+- Neon/Postgres for database access
 - Lucide React for icons
 - Date-fns for date formatting
 
 ## No Authentication Required
 
-This application is designed for personal use without authentication. All data is publicly accessible through the Supabase RLS policies.
+This application is designed for personal use without authentication. The admin login flow remains independent of any external auth provider and uses the existing password hash logic in the database.
 
 ## Deployment
 
