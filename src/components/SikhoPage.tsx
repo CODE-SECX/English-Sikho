@@ -110,7 +110,7 @@ export function SikhoPage() {
       moment_of_memory: item.moment_of_memory,
       category_id: item.category_id || '',
       language: item.language,
-      date: item.date
+      date: item.date ? item.date.slice(0, 10) : ''
     });
     setShowForm(true);
   };
