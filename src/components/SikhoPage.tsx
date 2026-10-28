@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Edit2, Trash2, Grid3X3, List, Tag, Brain, Globe } from 'lucide-react';
 import { useSikho, useCategories } from '../hooks/useSupabase';
 import { format } from 'date-fns';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { Sikho } from '../types';
 import { SikhoCard } from './SikhoCard';
-import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
 import { SmartDropdown } from './SmartDropdown';
 
@@ -21,7 +20,7 @@ export function SikhoPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Sikho | null>(null);
-  const [viewingItem, setViewingItem] = useState<Sikho | null>(null);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
@@ -115,8 +114,20 @@ export function SikhoPage() {
     setShowForm(true);
   };
 
+  // Open edit form when arriving from a detail page (?edit=<id>)
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (!editId) return;
+    const item = sikho.find(i => i.id === editId);
+    if (item) {
+      handleEdit(item);
+      setSearchParams(prev => { prev.delete('edit'); return prev; }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, sikho.length]);
+
   const handleView = (item: Sikho) => {
-    setViewingItem(item);
+    navigate(`/sikho/${item.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -341,7 +352,7 @@ export function SikhoPage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
                   </div>
-                  <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                  <p className="text-sm text-slate-700 mt-1">
                     {stripHtml(item.description)}
                   </p>
                 </div>
@@ -371,16 +382,6 @@ export function SikhoPage() {
         )}
       </div>
 
-      <DetailModal
-        isOpen={!!viewingItem}
-        onClose={() => setViewingItem(null)}
-        data={viewingItem}
-        type="sikho"
-        onEdit={() => {
-          if (viewingItem) handleEdit(viewingItem);
-          setViewingItem(null);
-        }}
-      />
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">

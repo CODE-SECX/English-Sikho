@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, SortAsc, SortDesc, Calendar, X, Share2, ChevronDown, Edit2, Trash2 } from 'lucide-react';
 import { useVocabulary } from '../hooks/useSupabase';
 import { format } from 'date-fns';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { Vocabulary } from '../types';
 import { VocabularyCard } from './VocabularyCard';
-import { DetailModal } from './DetailModal';
 import { RichTextEditor } from './RichTextEditor';
 import { ShareModal } from './ShareModal';
 import { SmartDropdown } from './SmartDropdown';
@@ -21,7 +20,7 @@ export function VocabularyPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Vocabulary | null>(null);
-  const [viewingItem, setViewingItem] = useState<Vocabulary | null>(null);
+  const navigate = useNavigate();
   const [sharingItem, setSharingItem] = useState<Vocabulary | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'word' | 'created_at'>('created_at');
@@ -126,8 +125,20 @@ export function VocabularyPage() {
     setShowForm(true);
   };
 
+  // Open edit form when arriving from a detail page (?edit=<id>)
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (!editId) return;
+    const item = vocabulary.find(i => i.id === editId);
+    if (item) {
+      handleEdit(item);
+      setSearchParams(prev => { prev.delete('edit'); return prev; }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, vocabulary.length]);
+
   const handleView = (item: Vocabulary) => {
-    setViewingItem(item);
+    navigate(`/vocabulary/${item.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -338,7 +349,7 @@ export function VocabularyPage() {
                             <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
 
                           </div>
-                          <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                          <p className="text-sm text-slate-700 mt-1">
                             {stripHtml(item.meaning)}
                           </p>
                         </div>
@@ -362,7 +373,7 @@ export function VocabularyPage() {
                   <div>
                     <h3 className="text-lg font-bold text-slate-900">{item.word}</h3>
                   </div>
-                  <p className="text-sm text-slate-700 mt-1 line-clamp-2">
+                  <p className="text-sm text-slate-700 mt-1">
                     {stripHtml(item.meaning)}
                   </p>
                 </div>
@@ -392,16 +403,6 @@ export function VocabularyPage() {
         )}
       </div>
 
-      <DetailModal
-        isOpen={!!viewingItem}
-        onClose={() => setViewingItem(null)}
-        data={viewingItem}
-        type="vocabulary"
-        onEdit={() => {
-          if (viewingItem) handleEdit(viewingItem);
-          setViewingItem(null);
-        }}
-      />
 
       <ShareModal
         isOpen={!!sharingItem}

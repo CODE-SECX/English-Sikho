@@ -1,6 +1,10 @@
 const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
+const net = require('net');
+
+// Node's default 250ms per-address connect attempt is too short on slower networks (causes ETIMEDOUT to Neon).
+net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 
 dotenv.config();
 
@@ -11,7 +15,7 @@ const connectionString = process.env.DATABASE_URL || process.env.NEON_DATABASE_U
 app.use(express.json());
 
 const pool = connectionString
-  ? new Pool({ connectionString })
+  ? new Pool({ connectionString, connectionTimeoutMillis: 20000 })
   : null;
 
 function getPool(res) {

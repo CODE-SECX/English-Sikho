@@ -7,6 +7,7 @@ import { SikhoPage } from './components/SikhoPage';
 import { AdminPage } from './components/AdminPage';
 import { SharedView } from './components/SharedView';
 import { MomentsPage } from './components/MomentsPage';
+import { EntryDetailPage } from './components/EntryDetailPage';
 
 function SharedViewWrapper() {
   const { encodedData } = useParams<{ encodedData: string }>();
@@ -20,7 +21,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/vocabulary" element={<VocabularyPage />} />
+          <Route path="/vocabulary/:id" element={<EntryDetailPage type="vocabulary" />} />
           <Route path="/sikho" element={<SikhoPage />} />
+          <Route path="/sikho/:id" element={<EntryDetailPage type="sikho" />} />
           <Route path="/moments" element={<MomentsPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/share/:encodedData" element={<SharedViewWrapper />} />
