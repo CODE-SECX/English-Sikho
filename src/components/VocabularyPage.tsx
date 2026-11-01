@@ -19,6 +19,9 @@ export function VocabularyPage() {
   const { vocabulary, loading, addVocabulary, updateVocabulary, deleteVocabulary } = useVocabulary();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
+  useEffect(() => {
+    if (showForm) window.scrollTo({ top: 0 });
+  }, [showForm]);
   const [editingItem, setEditingItem] = useState<Vocabulary | null>(null);
   const navigate = useNavigate();
   const [sharingItem, setSharingItem] = useState<Vocabulary | null>(null);
@@ -178,6 +181,8 @@ export function VocabularyPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {!showForm && (
+      <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Vocabulary</h1>
@@ -411,9 +416,19 @@ export function VocabularyPage() {
         type="vocabulary"
       />
 
+      </>
+      )}
+
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-4 sm:my-8 shadow-2xl max-h-[95vh] overflow-y-auto">
+        <div className="w-full">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow border border-slate-200">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-3"
+            >
+              ← Back
+            </button>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {editingItem ? 'Edit Vocabulary' : 'Add New Vocabulary'}
             </h2>

@@ -7,6 +7,8 @@ import { SikhoPage } from './components/SikhoPage';
 import { AdminPage } from './components/AdminPage';
 import { SharedView } from './components/SharedView';
 import { MomentsPage } from './components/MomentsPage';
+import { BooksPage } from './components/BooksPage';
+import { BookDetailPage } from './components/BookDetailPage';
 import { EntryDetailPage } from './components/EntryDetailPage';
 
 function SharedViewWrapper() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="/vocabulary/:id" element={<EntryDetailPage type="vocabulary" />} />
           <Route path="/sikho" element={<SikhoPage />} />
           <Route path="/sikho/:id" element={<EntryDetailPage type="sikho" />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/books/:id" element={<BookDetailPage />} />
           <Route path="/moments" element={<MomentsPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/share/:encodedData" element={<SharedViewWrapper />} />

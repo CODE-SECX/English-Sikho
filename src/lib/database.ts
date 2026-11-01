@@ -1,4 +1,4 @@
-import type { Category, Sikho, Vocabulary } from '../types';
+import type { Book, BookWord, Category, Sikho, Vocabulary } from '../types';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -92,6 +92,59 @@ export async function updateSikho(id: string, updates: Partial<Sikho>): Promise<
 
 export async function deleteSikho(id: string): Promise<void> {
   return request<void>(`/sikho/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getBooks(): Promise<Book[]> {
+  return request<Book[]>('/books');
+}
+
+export async function createBook(book: Pick<Book, 'title' | 'author'>): Promise<Book> {
+  return request<Book>('/books', {
+    method: 'POST',
+    body: JSON.stringify(book),
+  });
+}
+
+export async function updateBook(id: string, updates: Pick<Book, 'title' | 'author'>): Promise<Book> {
+  return request<Book>(`/books/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  });
+}
+
+export async function deleteBook(id: string): Promise<void> {
+  return request<void>(`/books/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getBookWords(): Promise<BookWord[]> {
+  return request<BookWord[]>('/book-words');
+}
+
+export async function createBookWords(
+  words: Pick<BookWord, 'book_id' | 'page' | 'word' | 'meaning' | 'meaning_gujarati'>[],
+): Promise<BookWord[]> {
+  return request<BookWord[]>('/book-words', {
+    method: 'POST',
+    body: JSON.stringify(words),
+  });
+}
+
+export async function updateBookWord(
+  id: string,
+  updates: Pick<BookWord, 'page' | 'word' | 'meaning' | 'meaning_gujarati'>,
+): Promise<BookWord> {
+  return request<BookWord>(`/book-words/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  });
+}
+
+export async function deleteBookWord(id: string): Promise<void> {
+  return request<void>(`/book-words/${id}`, {
     method: 'DELETE',
   });
 }

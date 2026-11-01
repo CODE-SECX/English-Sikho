@@ -47,7 +47,7 @@ export function EntryDetailPage({ type }: EntryDetailPageProps) {
   const title = 'word' in entry ? entry.word : entry.title;
 
   return (
-    <article className="max-w-2xl mx-auto">
+    <article className="w-full">
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(basePath))}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Book, LibraryBig, Settings, Brain, BookOpen } from 'lucide-react';
+import { Home, Book, LibraryBig, BookMarked, Settings, Brain, BookOpen } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +10,7 @@ const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/vocabulary', label: 'Words', icon: Book },
   { path: '/sikho', label: 'Sikho', icon: LibraryBig },
+  { path: '/books', label: 'Books', icon: BookMarked },
   { path: '/moments', label: 'Moments', icon: Brain },
   { path: '/admin', label: 'Admin', icon: Settings },
 ];
@@ -23,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-[#f3faf7]">
       {/* Desktop top bar */}
       <header className="hidden md:block bg-white/90 backdrop-blur-sm border-b border-emerald-100 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="w-full px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <span className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
               <BookOpen className="h-5 w-5 text-white" />
@@ -49,13 +50,13 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-28 md:pt-8 md:pb-12">
+      <main className="w-full px-4 sm:px-6 lg:px-10 pt-4 pb-28 md:pt-8 md:pb-12">
         {children}
       </main>
 
       {/* Mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-emerald-100 pb-[env(safe-area-inset-bottom)]">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-6">
           {navItems.map(({ path, label, icon: Icon }) => (
             <Link
               key={path}

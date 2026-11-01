@@ -28,3 +28,20 @@ export interface Sikho {
   created_at: string;
   category?: Category;
 }
+
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  created_at: string;
+}
+
+export interface BookWord {
+  id: string;
+  book_id: string;
+  page: number;
+  word: string;
+  meaning: string;
+  meaning_gujarati: string;
+  created_at: string;
+}

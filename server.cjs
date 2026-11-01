@@ -260,6 +260,109 @@ app.delete('/api/sikho/:id', async (req, res) => {
   }
 });
 
+
+let booksReady = null;
+
+function ensureBookTables(database) {
+  if (!booksReady) {
+    booksReady = database
+      .query(
+        `CREATE TABLE IF NOT EXISTS books (
+           id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+           title text NOT NULL,
+           author text NOT NULL DEFAULT '',
+           created_at timestamptz NOT NULL DEFAULT now()
+         );
+         CREATE TABLE IF NOT EXISTS book_words (
+           id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+           book_id uuid NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+           page integer NOT NULL DEFAULT 1,
+           word text NOT NULL,
+           meaning text NOT NULL DEFAULT '',
+           meaning_gujarati text NOT NULL DEFAULT '',
+           created_at timestamptz NOT NULL DEFAULT now()
+         );
+         CREATE INDEX IF NOT EXISTS book_words_book_id_idx ON book_words (book_id, page);`,
+      )
+      .catch((error) => {
+        booksReady = null;
+        throw error;
+      });
+  }
+  return booksReady;
+}
+
+function bookRoute(handler, label) {
+  return async (req, res) => {
+    const database = getPool(res);
+    if (!database) return;
+    try {
+      await ensureBookTables(database);
+      await handler(database, req, res);
+    } catch (error) {
+      console.error(`Error in ${label}:`, error);
+      res.status(500).json({ error: `${label} request failed.` });
+    }
+  };
+}
+
+app.get('/api/books', bookRoute(async (db, _req, res) => {
+  res.json((await db.query('SELECT * FROM books ORDER BY created_at DESC')).rows);
+}, 'books'));
+
+app.post('/api/books', bookRoute(async (db, req, res) => {
+  const { title, author } = req.body;
+  const result = await db.query('INSERT INTO books (title, author) VALUES ($1, $2) RETURNING *', [title, author || '']);
+  res.status(201).json(result.rows[0]);
+}, 'books'));
+
+app.put('/api/books/:id', bookRoute(async (db, req, res) => {
+  const { title, author } = req.body;
+  const result = await db.query('UPDATE books SET title = $1, author = $2 WHERE id = $3 RETURNING *', [title, author || '', req.params.id]);
+  if (result.rows.length === 0) return res.status(404).json({ error: 'Book not found.' });
+  res.json(result.rows[0]);
+}, 'books'));
+
+app.delete('/api/books/:id', bookRoute(async (db, req, res) => {
+  await db.query('DELETE FROM books WHERE id = $1', [req.params.id]);
+  res.status(204).send();
+}, 'books'));
+
+app.get('/api/book-words', bookRoute(async (db, _req, res) => {
+  res.json((await db.query('SELECT * FROM book_words ORDER BY page, created_at')).rows);
+}, 'book words'));
+
+app.post('/api/book-words', bookRoute(async (db, req, res) => {
+  const rows = Array.isArray(req.body) ? req.body : [req.body];
+  if (rows.length === 0) return res.json([]);
+  const params = [];
+  const values = rows.map((row, i) => {
+    params.push(row.book_id, row.page, row.word, row.meaning || '', row.meaning_gujarati || '');
+    const n = i * 5;
+    return `($${n + 1}, $${n + 2}, $${n + 3}, $${n + 4}, $${n + 5})`;
+  });
+  const result = await db.query(
+    `INSERT INTO book_words (book_id, page, word, meaning, meaning_gujarati) VALUES ${values.join(', ')} RETURNING *`,
+    params,
+  );
+  res.status(201).json(result.rows);
+}, 'book words'));
+
+app.put('/api/book-words/:id', bookRoute(async (db, req, res) => {
+  const { page, word, meaning, meaning_gujarati } = req.body;
+  const result = await db.query(
+    'UPDATE book_words SET page = $1, word = $2, meaning = $3, meaning_gujarati = $4 WHERE id = $5 RETURNING *',
+    [page, word, meaning || '', meaning_gujarati || '', req.params.id],
+  );
+  if (result.rows.length === 0) return res.status(404).json({ error: 'Word not found.' });
+  res.json(result.rows[0]);
+}, 'book words'));
+
+app.delete('/api/book-words/:id', bookRoute(async (db, req, res) => {
+  await db.query('DELETE FROM book_words WHERE id = $1', [req.params.id]);
+  res.status(204).send();
+}, 'book words'));
+
 app.listen(port, () => {
   console.log(`Database API listening on http://localhost:${port}`);
 });
